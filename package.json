@@ -1,0 +1,22 @@
+{
+  "name": "wpwhitesecurity/select2-for-wordpress",
+  "description": "Select2 integration library for WordPress",
+  "version": "1.0.0",
+  "author": "WP White Security (https://www.wpwhitesecurity.com/)",
+  "main": "gulpfile.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wpwhitesecurity/auto-complete-data-retrieval"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "select2": "^4.0.13"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-copy": "^4.0.1"
+  },
+  "scripts": {
+    "build": "gulp"
+  }
+}

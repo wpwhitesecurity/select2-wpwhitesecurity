@@ -1,0 +1,20 @@
+{
+  "name": "wpwhitesecurity/select2-for-wordpress",
+  "description": "Select2 integration library for WordPress",
+  "version": "1.0.0",
+  "authors": [
+	{
+	  "name": "WP White Security",
+	  "email": "info@wpwhitesecurity.com"
+	}
+  ],
+  "minimum-stability": "dev",
+  "require": {
+	"php": ">=7.0"
+  },
+  "autoload": {
+	"files": [
+	  "load.php"
+	]
+  }
+}
