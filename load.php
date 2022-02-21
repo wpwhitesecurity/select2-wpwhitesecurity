@@ -109,14 +109,15 @@ if ( ! class_exists( '\S24WP' ) ) {
 		 *
 		 * @return array
 		 */
-		public function get_users( $search_term ) {
-			$result = array();
-			$users  = get_users(
-				array(
-					'search'         => '*' . $search_term . '*',
-					'search_columns' => array( 'user_login', 'user_email' ),
-				)
-			);
+		public function get_users( $search_term = null ) {
+			$result       = array();
+			$query_params = array();
+			if ( ! is_null( $search_term ) ) {
+				$query_params['search']         = '*' . $search_term . '*';
+				$query_params['search_columns'] = array( 'user_login', 'user_email' );
+			}
+
+			$users = get_users( $query_params );
 
 			if ( empty( $users ) ) {
 				return $result;
@@ -199,6 +200,7 @@ if ( ! class_exists( '\S24WP' ) ) {
 			// multiple - bool
 			// min_chars - int (minimum number of characters to type before searching)
 			// selected - selected value or an array of values
+			// extra_js_callback
 
 			if ( ! isset( self::$base_url ) ) {
 				// Library not initialized correctly.
@@ -229,9 +231,6 @@ if ( ! class_exists( '\S24WP' ) ) {
 			}
 
 			$attributes['id'] = $args['id'];
-			if ( array_key_exists( 'placeholder', $args ) ) {
-				$attributes['placeholder'] = $args['placeholder'];
-			}
 
 			if ( array_key_exists( 'width', $args ) ) {
 				$attributes['style'] = 'width: ' . $args['width'] . 'px;';
@@ -248,7 +247,9 @@ if ( ! class_exists( '\S24WP' ) ) {
 			echo '<script type="application/javascript">';
 			echo 'jQuery( document ).ready( function() {';
 			echo 'const s2 = jQuery( "#' . $args['id'] . '" ).select2( {';
-			echo 'placeholder: "' . $args['placeholder'] . '",';
+			if ( array_key_exists( 'placeholder', $args ) ) {
+				echo 'placeholder: "' . $args['placeholder'] . '",';
+			}
 			echo 'containerCssClass: "s24wp-wrapper",';
 
 			if ( array_key_exists( 'multiple', $args ) && true === $args['multiple'] ) {
@@ -276,6 +277,28 @@ if ( ! class_exists( '\S24WP' ) ) {
 				unset( $args['data-type'] );
 			}
 
+			/**
+			 * Users are by default loaded from a remote AJAX data source.
+			 *
+			 * However, there is an option to use pre-loaded local data source if there is less than certain number of
+			 * objects of given type in system.
+			 *
+			 * TODO consider support for posts
+			 */
+			$data_types_with_remote_source_option = array( 'user' );
+			if ( array_key_exists( 'remote_source_threshold', $args ) && in_array( $args['data-type'], $data_types_with_remote_source_option, true ) ) {
+				$threshold = intval( $args['remote_source_threshold'] );
+				if ( $threshold > 0 ) {
+					if ( 'user' === $args['data-type'] ) {
+						$users_count = count_users( 'time' )['total_users'];
+						if ( $users_count <= $threshold ) {
+							$args['data'] = self::get_users();
+							unset( $args['data-type'] );
+						}
+					}
+				}
+			}
+
 			if ( array_key_exists( 'data', $args ) ) {
 				echo 'data: ' . json_encode( $args['data'] );
 			}
@@ -294,6 +317,10 @@ if ( ! class_exists( '\S24WP' ) ) {
 			}
 
 			echo '} );';
+
+			if ( array_key_exists( 'extra_js_callback', $args ) && is_callable( $args['extra_js_callback'] ) ) {
+				call_user_func( $args['extra_js_callback'], $attributes['id'] );
+			}
 
 			if ( array_key_exists( 'selected', $args ) && is_array( $args['selected'] ) ) {
 				if ( $has_remote_source ) {
@@ -315,7 +342,7 @@ if ( ! class_exists( '\S24WP' ) ) {
 				}
 
 				echo 's2.val(' . json_encode( $args['selected'] ) . ');';
-				echo 's2.trigger("change")';
+				echo 's2.trigger("change");';
 			}
 
 			echo '} );';
