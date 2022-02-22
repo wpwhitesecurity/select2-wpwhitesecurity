@@ -1,10 +1,11 @@
 .select2-container--default .select2-selection.s24wp-wrapper .select2-selection__rendered {
-	padding: 5px 5px 0 5px !important;
+	padding: 5px 4px 0 5px !important;
 	display: block !important;
 }
 
 .select2-container--default .select2-selection.s24wp-wrapper .select2-selection__choice {
 	margin-top: 0 !important;
+	margin-bottom: 4px !important;
 	padding: 5px 5px 5px 23px !important;
 	position: relative !important;
 }
