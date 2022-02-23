@@ -81,8 +81,8 @@ if ( ! class_exists( '\S24WP' ) ) {
 			}
 
 			$result      = array();
-			$entity      = wp_unslash( trim( $_REQUEST['entity'] ) );
-			$search_term = wp_unslash( trim( $_REQUEST['term'] ) );
+			$entity      = sanitize_text_field( wp_unslash( trim( $_REQUEST['entity'] ) ) );
+			$search_term = sanitize_text_field( wp_unslash( trim( $_REQUEST['term'] ) ) );
 			switch ( $entity ) {
 				case 'user':
 					$result = self::get_users( $search_term );
@@ -109,7 +109,7 @@ if ( ! class_exists( '\S24WP' ) ) {
 		 *
 		 * @return array
 		 */
-		public function get_users( $search_term = null ) {
+		public static function get_users( $search_term = null ) {
 			$result       = array();
 			$query_params = array();
 			if ( ! is_null( $search_term ) ) {
@@ -133,7 +133,7 @@ if ( ! class_exists( '\S24WP' ) ) {
 		 *
 		 * @return array|void
 		 */
-		private function convert_object_to_select2_data( $object ) {
+		private static function convert_object_to_select2_data( $object ) {
 			if ( $object instanceof WP_User ) {
 				return array(
 					'id'   => $object->ID,
@@ -179,7 +179,7 @@ if ( ! class_exists( '\S24WP' ) ) {
 			remove_filter( 'posts_where', array( __CLASS__, 'search_post_title' ), 10 );
 
 			if ( empty( $posts ) ) {
-				return $posts;
+				return $result;
 			}
 
 			return array_map( array( __CLASS__, 'convert_object_to_select2_data' ), $posts );
@@ -200,7 +200,7 @@ if ( ! class_exists( '\S24WP' ) ) {
 			// multiple - bool
 			// min_chars - int (minimum number of characters to type before searching)
 			// selected - selected value or an array of values
-			// extra_js_callback
+			// extra_js_callback - function to call after the select2 init function is called, it should print additional JS if necessary, using "s2" as reference to the current select2 instance
 
 			if ( ! isset( self::$base_url ) ) {
 				// Library not initialized correctly.
@@ -243,6 +243,7 @@ if ( ! class_exists( '\S24WP' ) ) {
 				}
 			);
 
+			// @codingStandardsIgnoreStart
 			echo '<select ' . implode( ' ', $attributes ) . '></select>';
 			echo '<script type="application/javascript">';
 			echo 'jQuery( document ).ready( function() {';
@@ -259,6 +260,7 @@ if ( ! class_exists( '\S24WP' ) ) {
 			if ( array_key_exists( 'width', $args ) ) {
 				echo 'width: "' . $args['width'] . 'px",';
 			}
+			// @codingStandardsIgnoreEnd
 
 			if ( array_key_exists( 'data-type', $args ) && 'role' === $args['data-type'] ) {
 				// Populate the roles' data. Local data source will be used.
