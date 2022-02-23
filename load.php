@@ -166,7 +166,7 @@ if ( ! class_exists( '\S24WP' ) ) {
 		 *
 		 * @return array
 		 */
-		public function get_posts( $search_term ) {
+		public static function get_posts( $search_term ) {
 			$result = array();
 
 			$args = array(
@@ -392,7 +392,7 @@ if ( ! class_exists( '\S24WP' ) ) {
 		 *
 		 * @return string
 		 */
-		public static function search_post_title( $where, &$wp_query ) {
+		public static function search_post_title( $where, $wp_query ) {
 			$search_term = $wp_query->get( 'search_post_title' );
 			if ( $search_term ) {
 				global $wpdb;
