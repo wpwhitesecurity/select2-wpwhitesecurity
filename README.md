@@ -50,4 +50,22 @@ The autocomplete input itself is rendering using function `\S24WP::insert()`. It
 - `min_chars` (`int`) - Minimum number of characters to type before searching. Only applies to 
 - `selected` (`string[]|int[]`) - Selected value or an array of values. Doesn't support comma separated list.
 - `extra_js_callback` (`callable`) - PHP function to call after the JavaScript select2 init function is printed. It should print additional JS if necessary, using `s2` as reference to the current select2 instance.
-- `remote_source_threshold` (`int`) - Only use when `data-type` is set to `user`. Users are loaded using AJAX only if number of users exceeds given threshold. Otherwise the users are pre-loaded locally. 
+- `remote_source_threshold` (`int`) - Only use when `data-type` is set to `user`. Users are loaded using AJAX only if number of users exceeds given threshold. Otherwise the users are pre-loaded locally.
+
+### Example
+
+```
+\S24WP::insert(
+    array(
+        'placeholder'             => esc_html__( 'select user(s)', 'admin-notices-manager' ),
+        'name'                    => 'visibility["show-users"][]',
+        'width'                   => 500,
+        'data-type'               => 'user',
+        'multiple'                => true,
+        'extra_js_callback'       => function ( $element_id ) {
+            echo 'window.anm_settings.append_select2_events( s2 );';
+        },
+        'remote_source_threshold' => 300,
+    )
+);
+```
