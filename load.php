@@ -173,7 +173,10 @@ if ( ! class_exists( '\S24WP' ) ) {
 				'search_post_title' => $search_term, // Search post title only.
 				'suppress_filters'  => false,
 				'post_status'       => 'publish',
+				'post_type'         => 'any',
+				'post_status'       => 'any',
 			);
+
 			add_filter( 'posts_where', array( __CLASS__, 'search_post_title' ), 10, 2 );
 			$posts = get_posts( $args );
 			remove_filter( 'posts_where', array( __CLASS__, 'search_post_title' ), 10 );
